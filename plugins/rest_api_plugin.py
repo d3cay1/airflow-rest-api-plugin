@@ -127,7 +127,7 @@ apis_metadata = [
         "airflow_version": "1.7.1 or greater",
         "http_method": "GET",
         "arguments": [
-            {"name": "set", "description": "Set a variable. Expected input in the form: KEY VALUE.", "form_input_type": "text", "required": False},
+            {"name": "set", "description": "Set a variable. Expected input in the form: KEY VALUE.", "form_input_type": "text", "required": False, "split": True},
             {"name": "get", "description": "Get value of a variable", "form_input_type": "text", "required": False},
             {"name": "json", "description": "Deserialize JSON variable", "form_input_type": "checkbox", "required": False},
             {"name": "default", "description": "Default value returned if variable does not exist", "form_input_type": "text", "required": False},
@@ -637,7 +637,10 @@ class REST_API(BaseView):
                     if argument["form_input_type"] is not "checkbox":
                         # Relacing airflow_cmd_split.extend(argument_value.split(" ") with command below to fix issue where configuration 
                         # values contain space with them.
-                        airflow_cmd_split.append(argument_value)
+                        if 'split' in argument and argument['split']: # split the argument
+                            airflow_cmd_split.extend(argument_value.split())
+                        else:
+                            airflow_cmd_split.append(argument_value)
             else:
                 logging.warning("argument_value is null")
 
